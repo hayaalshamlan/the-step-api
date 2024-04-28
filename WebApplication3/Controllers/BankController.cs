@@ -13,6 +13,7 @@ namespace WebApplication3.Controllers
         {
             _context = context;
         }
+        [HttpGet]
         public List<BankBranch> GetAll()
         { return _context.BankBranches.ToList(); 
         }
@@ -29,6 +30,47 @@ namespace WebApplication3.Controllers
             });
             _context.SaveChanges();
             return Created();
+        }
+        [HttpGet("{id}")]
+        public IActionResult Details(int id)
+        {
+            var bank = _context.BankBranches.Find(id);
+            if(bank == null)
+            {
+                return NotFound();
+            }
+            return Ok(new BankBranchResponse
+            {
+
+                BranchManager = bank.BranchManager,
+                LocationName = bank.LocationName,
+                Name = bank.Name
+            });
+        }
+
+        [HttpPatch("{id}")]
+        public IActionResult Edit(int id, AddBankRequest req)
+        {
+            var bank = _context.BankBranches.Find(id);
+            bank.Name = req.Name;
+            bank.LocationName = req.LocationName;
+            bank.LocationURL = req.LocationURL;
+            bank.BranchManager = req.BranchManager;
+            _context.SaveChanges();
+            return Created(nameof(Details), new { Id = bank.Id });
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var bank = _context.BankBranches.Find(id);
+            if (bank == null)
+            {
+                return BadRequest();
+            }
+            _context.BankBranches.Remove(bank);
+        _context.SaveChanges();
+        return Ok();
         }
 
     }
