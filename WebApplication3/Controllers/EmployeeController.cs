@@ -24,6 +24,7 @@ namespace WebApplication3.Controllers
                 Name = e.Name,
                 CivilId = e.CivilId,
                 Position = e.Position,
+                Id = e.Id
             }).ToList();
         }
            
@@ -63,13 +64,15 @@ namespace WebApplication3.Controllers
         [HttpPatch("{id}")]
         public IActionResult Edit(int id, AddEmployeeRequest add)
         {
-            var bank = _context.Employees.Find(id);
-            add.Id = add.Id;
-            add.Name = add.Name;
-            add.CivilId = add.CivilId;
-            add.Position = add.Position;
+            var employee = _context.Employees.Find(id);
+          
+            employee.Name = add.Name;
+            employee.CivilId = add.CivilId;
+            employee.Position = add.Position;
+         
+           // _context.Employees.Add( bank);
             _context.SaveChanges();
-            return Created(nameof(Details), new { Id = add.Id });
+            return Created(nameof(Details), new { Id = employee.Id });
         }
 
 

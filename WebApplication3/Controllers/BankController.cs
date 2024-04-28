@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 using WebApplication3.Models;
 
 namespace WebApplication3.Controllers
@@ -14,8 +15,29 @@ namespace WebApplication3.Controllers
             _context = context;
         }
         [HttpGet]
-        public List<BankBranch> GetAll()
-        { return _context.BankBranches.ToList(); 
+        public PageListResult<BankBranchResponse> GetAll(int page = 1, string search = "")
+        {
+            if (search == "")
+                { 
+                return _context.BankBranches.Select(b => new BankBranchResponse
+                {
+                    Name = b.Name,
+                    BranchManager = b.BranchManager,
+                    LocationURL = b.LocationURL,
+                        LocationName = b.LocationName,
+                     
+                }).ToPageList(page, 1);
+            } 
+            return _context.BankBranches
+                .Where(r => r.LocationName.StartsWith(search))
+                .Select(b => new BankBranchResponse
+                {
+                    Name = b.Name,
+                    BranchManager = b.BranchManager,
+                    LocationURL = b.LocationURL,
+                    LocationName = b.LocationName,
+
+                }).ToPageList(page, 1);
         }
         [HttpPost]
         public IActionResult Add(AddBankRequest req)
